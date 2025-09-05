@@ -105,4 +105,286 @@ xsi:schemaLocation="
 
 <p> Constructor DI, bağımlılıkların kurucu metotlar aracılığıyla enjekte edilmesini içerir. CDI'yı yapılandırmak için, bean yapılandırma dosyasında <constructor-arg> etiketi kullanılır. </p>
 
+``` java
+package com.geeksforgeeks.org;
 
+import com.geeksforgeeks.org.IGeek;
+
+public class GFG {
+
+    // The object of the interface IGeek
+    private IGeek geek;
+
+    // Constructor to set the CDI
+    public GFG(IGeek geek) {
+        this.geek = geek;
+    }
+}
+
+```
+<p>Bean Configuration :</p>
+
+``` xml
+<beans 
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+    <bean id="GFG" class="com.geeksforgeeks.org.GFG">
+        <constructor-arg>
+            <bean class="com.geeksforgeeks.org.impl.CsvGFG" />
+        </constructor-arg>
+    </bean>
+    
+<bean id="CsvGFG" class="com.geeksforgeeks.org.impl.CsvGFG" />
+<bean id="JsonGFG" class="com.geeksforgeeks.org.impl.JsonGFG" />
+    
+</beans>
+
+
+```
+<p> Bu, CsvGFG bean'ini oluşturucu aracılığıyla GFG nesnesine enjekte eder.</p>
+
+### Setter Dependency Injection (SDI) vs. Constructor Dependency Injection (CDI) 
+
+| Özellik | Setter DI | Constructor DI |
+| :--- | :--- | :--- |
+| **Nesne Durumu** | Değiştirilebilir (Mutable) nesneler oluşturur. Bağımlılıklar, oluşturulduktan sonra değiştirilebilir. | Değiştirilemez (Immutable) nesneler oluşturur. Bağımlılıklar, oluşturulduktan sonra değiştirilemez. |
+| **Bağımlılık Zamanı** | Bağımlılıklar daha sonra enjekte edilebilir. | Tüm bağımlılıklar nesne oluşturulurken sağlanmalıdır. |
+| **Annotation Gereksinimi** | `@Autowired` ek açıklamasının eklenmesini gerektirir. | `@Autowired` ek açıklaması gerekli değildir. |
+| **Döngüsel Bağımlılıklar** | Döngüsel bağımlılıklara veya kısmi bağımlılıklara neden olabilir. | Döngüsel bağımlılıklar bunda da olabilir, ancak daha hızlı ve daha belirgin bir şekilde başarısız olur. |
+| **Test Edilebilirlik** | Testlerde bağımlılık enjeksiyonu için framework veya elle setter metot çağrıları gerektirir. | Birim testi daha kolaydır; sahte (mock) bağımlılıklarla nesneler doğrudan oluşturulabilir. |
+
+### Example of Spring DI 
+<p>Dört ana bileşenimiz var: IEngine arayüzü, ToyotaEngine sınıfı (IEngine'ı uygular), Tyres sınıfı ve Vehicle sınıfı (IEngine ve Tyres'a bağımlı).</p>
+<p>Burada, Vehicle kendi bağımlılıklarını oluşturmuyor; Spring, nesne oluşturma ve bağlama işini bizim için hallediyor.</p>
+<p>ToyotaEngine, iki Tyres örneği (tyre1Bean, tyre2Bean) ve iki Vehicle örneği için bean'ler XML konfigürasyonunda tanımlanmıştır.</p>
+<p>İki tür bağımlılık enjeksiyonu kullanılıyor: InjectwithConstructor, <constructor-arg> etiketleri aracılığıyla kurucu enjeksiyonunu kullanırken, InjectwithSetter ise <property> etiketleri aracılığıyla setter enjeksiyonunu kullanıyor.</p>
+<p>Spring, konfigürasyona bağlı olarak her bir Vehicle'a hangi motoru ve lastikleri enjekte edeceğini belirliyor.</p>
+<p>Vehicle, motorun veya lastiğin gerçek uygulamasından haberdar değildir.</p>
+<p>Bu durum, sistemi gevşek bağlı hale getirerek bakımı kolaylaştırır, daha esnek yapar ve ana mantığı bozmadan bileşenleri değiştirmeyi basitleştirir.</p>
+
+### Process Flow: 
+<img><img width="945" height="644" alt="image" src="https://github.com/user-attachments/assets/5f24e4ca-e2d8-48ae-a5e2-39b1d1727009" />
+</img>
+
+### Code Implementation 
+#### Engine.java
+
+``` java
+
+interface IEngine {
+    String EMISSION_NORMS = "BSIV";
+    String importOrigin();
+    double cost();
+}
+
+```
+
+#### ToyotaEngine.java
+
+``` java
+
+public class ToyotaEngine implements IEngine {
+    String company;
+    double cost;
+    public double getCost() { return cost; }
+
+    public void setCost(double cost) { cost = this.cost; }
+
+    public String getCompany() { return company; }
+
+    public void setCompany(String company)
+    {
+        this.company = company;
+    }
+
+    @Override public String importOrigin()
+    {
+        return "Japan";
+    }
+
+    @Override public double cost() { return cost; }
+    @Override public String toString()
+    {
+        return "This is Engine object from: " + company;
+    }
+}
+
+```
+
+#### Tyres.java
+
+``` java
+
+public class Tyres {
+
+    String name;
+    String place;
+    String message;
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getPlace() { return place; }
+    public void setPlace(String place)
+    {
+        this.place = place;
+    }
+    public String getMessage() { return message; }
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+
+    @Override public String toString()
+    {
+        return "This is Tyre object: " + name + " " + place
+            + " " + message;
+    }
+}
+
+```
+
+#### Vehicle.java
+
+``` java
+
+public class Vehicle {
+
+    IEngine engine;
+    Tyres tyre;
+
+    public Tyres getTyre() { return tyre; }
+
+    public void setTyre(Tyres tyre)
+    {
+        System.out.println("tyre instantiated via setter");
+        this.tyre = tyre;
+    }
+
+    public Vehicle(IEngine engine, Tyres tyre)
+    {
+        System.out.println("instantiated via constructor");
+        this.engine = engine;
+        this.tyre = tyre;
+    }
+
+    public Vehicle() {}
+    public IEngine getEngine() { return engine; }
+    public void setEngine(IEngine engine)
+    {
+        System.out.println("instantiated via setter");
+        this.engine = engine;
+    }
+
+    @Override public String toString()
+    {
+        return engine + " " + tyre;
+    }
+
+    public static void main(String a[])
+    {
+        ApplicationContext rootctx
+            = new ClassPathXmlApplicationContext(
+                "springContext.xml");
+
+        // Instantiating the obj1 via Constructor DI
+        Vehicle obj1 = (Vehicle)rootctx.getBean(
+            "InjectwithConstructor");
+
+        // Instantiating the obj1 via Setter DI
+        Vehicle obj2
+            = (Vehicle)rootctx.getBean("InjectwithSetter");
+
+        System.out.println(obj1);
+        System.out.println(obj2);
+        System.out.println(obj1 == obj2);
+    }
+}
+
+```
+
+#### pom.xml
+
+``` xml
+
+<dependencies>
+  
+    <!-- https:// mvnrepository.com/artifact
+    /org.springframework/spring-core -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>4.3.11.RELEASE</version>
+    </dependency>
+  
+    <!-- https:// mvnrepository.com/artifact
+    /org.springframework/spring-context -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>4.3.11.RELEASE</version>
+    </dependency>
+</dependencies>
+
+```
+
+#### springContext.xml
+
+``` xml
+
+< bean id="tyre1Bean" class="com.techgene.Tyres">
+    <property name="name" value="MRF">
+    </ property>
+
+    <property name="place" value="India">
+    </ property>
+
+    <property name="message" value="Make in India">
+    </ property>
+
+</ bean>
+
+< bean id="ToyotaBean" class="com.techgene.ToyotaEngine">
+    <property name="company" value="Toyota">
+    </ property>
+
+    <property name="cost" value="300000.00">
+    </ property>
+
+</ bean>
+
+< bean id="tyre2Bean" class="com.techgene.Tyres">
+    <property name="name" value="TVS">
+    </ property>
+
+    <property name="place" value="India">
+    </ property>
+
+    <property name="message" value="Make in India">
+    </ property>
+
+</ bean>
+
+< bean id="InjectwithSetter" class="com.techgene.Vehicle">
+    <property name="engine" ref="ToyotaBean">
+    </ property>
+
+    <property name="tyre" ref="tyre1Bean">
+    </ property>
+
+</ bean>
+
+< bean id="InjectwithConstructor" class="com.techgene.Vehicle">
+    <constructor - arg name="engine" ref="ToyotaBean">
+    </ constructor - arg>
+
+    <constructor - arg name="tyre" ref="tyre2Bean">
+    </ constructor - arg>
+    
+</ bean>
+
+```
