@@ -105,4 +105,67 @@ xsi:schemaLocation="
 
 <p> Constructor DI, bağımlılıkların kurucu metotlar aracılığıyla enjekte edilmesini içerir. CDI'yı yapılandırmak için, bean yapılandırma dosyasında <constructor-arg> etiketi kullanılır. </p>
 
+``` java
+package com.geeksforgeeks.org;
+
+import com.geeksforgeeks.org.IGeek;
+
+public class GFG {
+
+    // The object of the interface IGeek
+    private IGeek geek;
+
+    // Constructor to set the CDI
+    public GFG(IGeek geek) {
+        this.geek = geek;
+    }
+}
+
+```
+<p>Bean Configuration :</p>
+
+``` xml
+<beans 
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+    <bean id="GFG" class="com.geeksforgeeks.org.GFG">
+        <constructor-arg>
+            <bean class="com.geeksforgeeks.org.impl.CsvGFG" />
+        </constructor-arg>
+    </bean>
+    
+<bean id="CsvGFG" class="com.geeksforgeeks.org.impl.CsvGFG" />
+<bean id="JsonGFG" class="com.geeksforgeeks.org.impl.JsonGFG" />
+    
+</beans>
+
+
+```
+<p> Bu, CsvGFG bean'ini oluşturucu aracılığıyla GFG nesnesine enjekte eder.</p>
+
+### Setter Dependency Injection (SDI) vs. Constructor Dependency Injection (CDI) 
+
+| Özellik | Setter DI | Constructor DI |
+| :--- | :--- | :--- |
+| **Nesne Durumu** | Değiştirilebilir (Mutable) nesneler oluşturur. Bağımlılıklar, oluşturulduktan sonra değiştirilebilir. | Değiştirilemez (Immutable) nesneler oluşturur. Bağımlılıklar, oluşturulduktan sonra değiştirilemez. |
+| **Bağımlılık Zamanı** | Bağımlılıklar daha sonra enjekte edilebilir. | Tüm bağımlılıklar nesne oluşturulurken sağlanmalıdır. |
+| **Annotation Gereksinimi** | `@Autowired` ek açıklamasının eklenmesini gerektirir. | `@Autowired` ek açıklaması gerekli değildir. |
+| **Döngüsel Bağımlılıklar** | Döngüsel bağımlılıklara veya kısmi bağımlılıklara neden olabilir. | Döngüsel bağımlılıklar bunda da olabilir, ancak daha hızlı ve daha belirgin bir şekilde başarısız olur. |
+| **Test Edilebilirlik** | Testlerde bağımlılık enjeksiyonu için framework veya elle setter metot çağrıları gerektirir. | Birim testi daha kolaydır; sahte (mock) bağımlılıklarla nesneler doğrudan oluşturulabilir. |
+
+### Example of Spring DI 
+<p>Dört ana bileşenimiz var: IEngine arayüzü, ToyotaEngine sınıfı (IEngine'ı uygular), Tyres sınıfı ve Vehicle sınıfı (IEngine ve Tyres'a bağımlı).</p>
+<p>Burada, Vehicle kendi bağımlılıklarını oluşturmuyor; Spring, nesne oluşturma ve bağlama işini bizim için hallediyor.</p>
+<p>ToyotaEngine, iki Tyres örneği (tyre1Bean, tyre2Bean) ve iki Vehicle örneği için bean'ler XML konfigürasyonunda tanımlanmıştır.</p>
+<p>İki tür bağımlılık enjeksiyonu kullanılıyor: InjectwithConstructor, <constructor-arg> etiketleri aracılığıyla kurucu enjeksiyonunu kullanırken, InjectwithSetter ise <property> etiketleri aracılığıyla setter enjeksiyonunu kullanıyor.</p>
+<p>Spring, konfigürasyona bağlı olarak her bir Vehicle'a hangi motoru ve lastikleri enjekte edeceğini belirliyor.</p>
+<p>Vehicle, motorun veya lastiğin gerçek uygulamasından haberdar değildir.</p>
+<p>Bu durum, sistemi gevşek bağlı hale getirerek bakımı kolaylaştırır, daha esnek yapar ve ana mantığı bozmadan bileşenleri değiştirmeyi basitleştirir.</p>
+
+### Process Flow: 
 
