@@ -168,4 +168,223 @@ xsi:schemaLocation="
 <p>Bu durum, sistemi gevşek bağlı hale getirerek bakımı kolaylaştırır, daha esnek yapar ve ana mantığı bozmadan bileşenleri değiştirmeyi basitleştirir.</p>
 
 ### Process Flow: 
+<img><img width="945" height="644" alt="image" src="https://github.com/user-attachments/assets/5f24e4ca-e2d8-48ae-a5e2-39b1d1727009" />
+</img>
 
+### Code Implementation 
+#### Engine.java
+
+``` java
+
+interface IEngine {
+    String EMISSION_NORMS = "BSIV";
+    String importOrigin();
+    double cost();
+}
+
+```
+
+#### ToyotaEngine.java
+
+``` java
+
+public class ToyotaEngine implements IEngine {
+    String company;
+    double cost;
+    public double getCost() { return cost; }
+
+    public void setCost(double cost) { cost = this.cost; }
+
+    public String getCompany() { return company; }
+
+    public void setCompany(String company)
+    {
+        this.company = company;
+    }
+
+    @Override public String importOrigin()
+    {
+        return "Japan";
+    }
+
+    @Override public double cost() { return cost; }
+    @Override public String toString()
+    {
+        return "This is Engine object from: " + company;
+    }
+}
+
+```
+
+#### Tyres.java
+
+``` java
+
+public class Tyres {
+
+    String name;
+    String place;
+    String message;
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getPlace() { return place; }
+    public void setPlace(String place)
+    {
+        this.place = place;
+    }
+    public String getMessage() { return message; }
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+
+    @Override public String toString()
+    {
+        return "This is Tyre object: " + name + " " + place
+            + " " + message;
+    }
+}
+
+```
+
+#### Vehicle.java
+
+``` java
+
+public class Vehicle {
+
+    IEngine engine;
+    Tyres tyre;
+
+    public Tyres getTyre() { return tyre; }
+
+    public void setTyre(Tyres tyre)
+    {
+        System.out.println("tyre instantiated via setter");
+        this.tyre = tyre;
+    }
+
+    public Vehicle(IEngine engine, Tyres tyre)
+    {
+        System.out.println("instantiated via constructor");
+        this.engine = engine;
+        this.tyre = tyre;
+    }
+
+    public Vehicle() {}
+    public IEngine getEngine() { return engine; }
+    public void setEngine(IEngine engine)
+    {
+        System.out.println("instantiated via setter");
+        this.engine = engine;
+    }
+
+    @Override public String toString()
+    {
+        return engine + " " + tyre;
+    }
+
+    public static void main(String a[])
+    {
+        ApplicationContext rootctx
+            = new ClassPathXmlApplicationContext(
+                "springContext.xml");
+
+        // Instantiating the obj1 via Constructor DI
+        Vehicle obj1 = (Vehicle)rootctx.getBean(
+            "InjectwithConstructor");
+
+        // Instantiating the obj1 via Setter DI
+        Vehicle obj2
+            = (Vehicle)rootctx.getBean("InjectwithSetter");
+
+        System.out.println(obj1);
+        System.out.println(obj2);
+        System.out.println(obj1 == obj2);
+    }
+}
+
+```
+
+#### pom.xml
+
+``` xml
+
+<dependencies>
+  
+    <!-- https:// mvnrepository.com/artifact
+    /org.springframework/spring-core -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>4.3.11.RELEASE</version>
+    </dependency>
+  
+    <!-- https:// mvnrepository.com/artifact
+    /org.springframework/spring-context -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>4.3.11.RELEASE</version>
+    </dependency>
+</dependencies>
+
+```
+
+#### springContext.xml
+
+``` xml
+
+< bean id="tyre1Bean" class="com.techgene.Tyres">
+    <property name="name" value="MRF">
+    </ property>
+
+    <property name="place" value="India">
+    </ property>
+
+    <property name="message" value="Make in India">
+    </ property>
+
+</ bean>
+
+< bean id="ToyotaBean" class="com.techgene.ToyotaEngine">
+    <property name="company" value="Toyota">
+    </ property>
+
+    <property name="cost" value="300000.00">
+    </ property>
+
+</ bean>
+
+< bean id="tyre2Bean" class="com.techgene.Tyres">
+    <property name="name" value="TVS">
+    </ property>
+
+    <property name="place" value="India">
+    </ property>
+
+    <property name="message" value="Make in India">
+    </ property>
+
+</ bean>
+
+< bean id="InjectwithSetter" class="com.techgene.Vehicle">
+    <property name="engine" ref="ToyotaBean">
+    </ property>
+
+    <property name="tyre" ref="tyre1Bean">
+    </ property>
+
+</ bean>
+
+< bean id="InjectwithConstructor" class="com.techgene.Vehicle">
+    <constructor - arg name="engine" ref="ToyotaBean">
+    </ constructor - arg>
+
+    <constructor - arg name="tyre" ref="tyre2Bean">
+    </ constructor - arg>
+    
+</ bean>
+
+```
