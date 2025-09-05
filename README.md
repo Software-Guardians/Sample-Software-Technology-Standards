@@ -1,5 +1,5 @@
 # Back-End Yazılım Standartları E-Kitabı
-## Bu e-kitap, back-end yazılım geliştirmede modern standartları ve en iyi uygulamaları derinlemesine inceleyen kapsamlı bir rehberdir. Amacımız, Dependency Injection'dan Domain-Driven Design'a, mikroservis mimarisinden CI/CD süreçlerine kadar geniş bir yelpazede, sağlam, ölçeklenebilir ve sürdürülebilir back-end sistemleri oluşturmak için gereken temel kavramları ve teknolojileri sunmaktır. Bu rehber, ister kariyerinin başındaki bir geliştirici olun, ister deneyimli bir mühendis, back-end dünyasındaki yetkinliklerinizi bir üst seviyeye taşımanıza yardımcı olacak.
+### Bu e-kitap, back-end yazılım geliştirmede modern standartları ve en iyi uygulamaları derinlemesine inceleyen kapsamlı bir rehberdir. Amacımız, Dependency Injection'dan Domain-Driven Design'a, mikroservis mimarisinden CI/CD süreçlerine kadar geniş bir yelpazede, sağlam, ölçeklenebilir ve sürdürülebilir back-end sistemleri oluşturmak için gereken temel kavramları ve teknolojileri sunmaktır. Bu rehber, ister kariyerinin başındaki bir geliştirici olun, ister deneyimli bir mühendis, back-end dünyasındaki yetkinliklerinizi bir üst seviyeye taşımanıza yardımcı olacak.
 
 ## İçindekiler
 ### Dependency Injection & IoC: Bağımlılık enjeksiyonu ve kontrolün tersine çevrilmesi prensipleri.
