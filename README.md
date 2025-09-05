@@ -53,3 +53,56 @@
      <p>    Spring IoC (Kontrolün Tersine Çevrilmesi), bu tür bağımlılık sorunlarını Bağımlılık Enjeksiyonu (DI) kullanarak çözer. Bağımlılık Enjeksiyonu, kodu daha kolay test edilebilir ve yeniden kullanılabilir hale getirir.</p>
        <p>  Sınıflar arasındaki gevşek bağlılık, ortak işlevsellik için arayüzler tanımlayarak veya enjektörün (Spring container) uygun implementasyonu sağlamasına izin verilerek elde edilir. Nesneleri örneklendirme görevi, geliştiricinin belirttiği konfigürasyonlara göre container tarafından yapılır.</p>
 
+### Types of Spring Dependency Injection
+<p>Spring Bağımlılık Enjeksiyonunun iki temel türü vardır:</p>
+
+1. Setter Dependency Injection (SDI):
+<p> Setter DI, bağımlılıkların setter metotları aracılığıyla enjekte edilmesini içerir. SDI'yı yapılandırmak için, setter metotlarıyla birlikte @Autowired ek açıklaması kullanılır ve özellik, bean yapılandırma dosyasındaki <property> etiketi aracılığıyla ayarlanır.</p>
+
+``` java     
+package com.geeksforgeeks.org;
+import com.geeksforgeeks.org.IGeek;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class GFG {
+
+    // The object of the interface IGeek
+    private IGeek geek;
+
+    // Setter method for property geek with @Autowired annotation
+    @Autowired
+    public void setGeek(IGeek geek) {
+        this.geek = geek;
+    }
+}
+
+```
+
+<p>Bean Configuration </p>
+
+``` xml
+<beans 
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+          http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean id="GFG" class="com.geeksforgeeks.org.GFG">
+        <property name="geek"  ref ="CsvGFG" />
+    </bean>
+    
+<bean id="CsvGFG" class="com.geeksforgeeks.org.impl.CsvGFG" />
+<bean id="JsonGFG" class="com.geeksforgeeks.org.impl.JsonGFG" />
+    
+</beans>
+
+```
+
+<p>Bu, setter metodunu (setGeek) kullanarak CsvGFG bean'ini GFG nesnesine enjekte eder.</p>
+
+2. Constructor Dependency Injection (CDI):
+
+<p> Constructor DI, bağımlılıkların kurucu metotlar aracılığıyla enjekte edilmesini içerir. CDI'yı yapılandırmak için, bean yapılandırma dosyasında <constructor-arg> etiketi kullanılır. </p>
+
+
